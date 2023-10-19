@@ -26,12 +26,14 @@ import logging
 import numpy as np
 from tempfile import TemporaryDirectory
 from cytomine import CytomineJob
-from cytomine.models import ImageInstance, ImageInstanceCollection, AnnotationCollection, Annotation
+from cytomine.models.image import ImageInstanceCollection, ImageInstance
+from cytomine.models import AnnotationCollection, Annotation
 from cytomine.utilities.software import parse_domain_list
 from shapely.geometry import Polygon
 from sldc.locator import mask_to_objects_2d
 from shapely.affinity import affine_transform
 from skimage.filters import threshold_otsu
+from shapely import wkt
 
 __author__ = "WSHMunirah WAhmad <wshmunirah@gmail.com>"
 
