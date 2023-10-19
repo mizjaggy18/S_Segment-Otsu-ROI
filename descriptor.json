@@ -1,0 +1,163 @@
+{
+  "name": "Segment-Otsu-ROI",
+  "description": "Segment tissue based on ROI in WSIs using an Otsu threshold.",
+  "schema-version": "cytomine-0.1",
+  "container-image": {
+    "image": "mizjaggy18/s_segment-otsu-roi",
+    "index": "docker://",
+    "type": "singularity"
+    },
+  "command-line": "python run.py [CYTOMINE_HOST] [CYTOMINE_PUBLIC_KEY] [CYTOMINE_PRIVATE_KEY] [CYTOMINE_ID_PROJECT] [CYTOMINE_ID_SOFTWARE] [LOG_LEVEL] [CYTOMINE_ID_IMAGES] [CYTOMINE_ID_ROI_TERM] [CYTOMINE_ID_USER] [CYTOMINE_ID_PREDICTED_TERM] [MAX_IMAGE_SIZE] [KERNEL_SIZE] [THRESHOLD_ALLOWANCE] [IMAGE_AREA_PERC_THRESHOLD]",
+  "inputs": [
+    {
+      "id": "cytomine_host",
+      "value-key": "[@ID]",
+      "command-line-flag": "--@id",
+      "name": "Cytomine host",
+      "set-by-server": true,
+      "optional": false,
+      "type": "String"
+    },
+    {
+      "id": "cytomine_public_key",
+      "value-key": "[@ID]",
+      "command-line-flag": "--@id",
+      "name": "Cytomine public key",
+      "set-by-server": true,
+      "optional": false,
+      "type": "String"
+    },
+    {
+      "id": "cytomine_private_key",
+      "value-key": "[@ID]",
+      "command-line-flag": "--@id",
+      "name": "Cytomine private key",
+      "set-by-server": true,
+      "optional": false,
+      "type": "String"
+    },
+    {
+      "id": "cytomine_id_project",
+      "value-key": "[@ID]",
+      "command-line-flag": "--@id",
+      "name": "Cytomine project ID",
+      "set-by-server": true,
+      "optional": false,
+      "type": "Number"
+    },
+    {
+      "id": "cytomine_id_software",
+      "value-key": "[@ID]",
+      "command-line-flag": "--@id",
+      "name": "Cytomine software ID",
+      "set-by-server": true,
+      "optional": false,
+      "type": "Number"
+    },
+    {
+      "id": "cytomine_id_images",
+      "value-key": "[@ID]",
+      "command-line-flag": "--@id",
+      "name": "Cytomine image identifiers",
+      "description": "The identifiers of the images to process. If not specified all images of the project will be processed.",
+      "set-by-server": false,
+      "optional": true,
+      "type": "ListDomain",
+      "uri": "/api/project/$currentProject$/imageinstance.json",
+      "uri-print-attribute": "instanceFilename"
+    },
+    {
+      "id": "cytomine_id_roi_term",
+      "value-key": "[@ID]",
+      "command-line-flag": "--@id",
+      "name": "Cytomine ROI term ID",
+      "description": "Ontology term ID for ROI that will be thresholded",
+      "optional": false,
+      "type": "Domain",
+      "uri": "/api/ontology/$currentOntology$/term.json",
+      "uri-print-attribute": "name",
+      "uri-sort-attribute": "name"
+    },
+    {
+      "id": "cytomine_id_user",
+      "value-key": "[@ID]",
+      "command-line-flag": "--@id",
+      "name": "Cytomine User ID",
+      "description": "ROI term from specific user",
+      "set-by-server": false,
+      "optional": true,      
+      "type": "ListDomain",
+      "uri": "/api/project/$currentProject$/user.json",
+      "uri-sort-attribute": "username",
+      "uri-print-attribute": "username"
+    },    
+    {
+      "id": "cytomine_id_predicted_term",
+      "value-key": "[@ID]",
+      "command-line-flag": "--@id",
+      "name": "Term to predict",
+      "description": "The term that will be associated to detected samples",
+      "optional": false,
+      "type": "Domain",
+      "uri": "/api/ontology/$currentOntology$/term.json",
+      "uri-print-attribute": "name",
+      "uri-sort-attribute": "name"
+    },
+    {
+      "id": "max_image_size",
+      "value-key": "[@ID]",
+      "command-line-flag": "--@id",
+      "name": "Maximum image size",
+      "description": "Image is resized during the detection if the real image is larger.",
+      "optional": false,
+      "type": "Number",
+      "integer": true,
+      "default-value": "5000"
+    },
+    {
+      "id": "threshold_allowance",
+      "value-key": "[@ID]",
+      "command-line-flag": "--@id",
+      "name": "Threshold allowance",
+      "description": "A value to add / minus to the obtained Otsu threshold value",
+      "optional": false,
+      "type": "Number",
+      "default-value": "0"
+    },
+    {
+      "id": "kernel_size",
+      "value-key": "[@ID]",
+      "command-line-flag": "--@id",
+      "name": "Kernel size",
+      "description": "Kernel size for morphological operations",
+      "optional": false,
+      "type": "Number",
+      "default-value": "4"
+    },
+    {
+      "id": "image_area_perc_threshold",
+      "value-key": "[@ID]",
+      "command-line-flag": "--@id",
+      "name": "Image Area Percentile Threshold",
+      "description": "The detected component with an area less than the image area multipled by this percentile value will not be kept",
+      "optional": false,
+      "type": "Number",
+      "integer": true,
+      "minimum": 0,
+      "maximum": 100,
+      "default-value": "0"
+    },
+    {
+      "id": "log_level",
+      "value-key": "[@ID]",
+      "command-line-flag": "--@id",
+      "default": "INFO",
+      "name": "Logging verbosity",
+      "description": "The level is given by a value among 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'",
+      "set-by-server": false,
+      "optional": true,
+      "type": "String",
+      "default-value": "INFO"
+    }
+  ]
+}
