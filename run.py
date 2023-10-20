@@ -78,9 +78,10 @@ def main(argv):
           
               # download file in a temporary directory for auto-removal
               with TemporaryDirectory() as tmpdir:
-                  download_path = os.path.join(tmpdir, "{id}.png")
+                  download_path = os.path.join(tmpdir, f'{roi.id}.png')
                   roi.dump(dest_pattern=download_path, max_size=max(resized_width, resized_height),mask=True, alpha=True)
                   img_4ch = cv2.imread(download_path,cv2.IMREAD_UNCHANGED)
+                  print(img_4ch.shape)
                 
               ### to address alpha channel ###      
               img_alpha = img_4ch[:,:,3]
