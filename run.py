@@ -26,6 +26,7 @@ import logging
 import numpy as np
 from tempfile import TemporaryDirectory
 from cytomine import CytomineJob
+from cytomine.models import * 
 from cytomine.models.image import ImageInstanceCollection, ImageInstance
 from cytomine.models import AnnotationCollection, Annotation
 from cytomine.utilities.software import parse_domain_list
@@ -76,11 +77,12 @@ def main(argv):
               resized_width = int((max_x-min_x) / resize_ratio)
               resized_height = int((max_y-min_y) / resize_ratio)
               print(resized_width, resized_height)
-          
+
+              is_algo = User().fetch(roi.user).algo
               # download file in a temporary directory for auto-removal
               with TemporaryDirectory() as tmpdir:
                   download_path = os.path.join(tmpdir, f'{roi.id}.png')
-                  roi.dump(dest_pattern=download_path, max_size=max(resized_width, resized_height),mask=True, alpha=True)
+                  roi.dump(dest_pattern=download_path, max_size=max(resized_width, resized_height),mask=True, alpha=not is_algo)
                   img_4ch = cv2.imread(download_path,cv2.IMREAD_UNCHANGED)
                   print(img_4ch.shape)
                 
