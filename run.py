@@ -59,6 +59,7 @@ def main(argv):
             roi_annotations.terms=[cj.parameters.cytomine_id_roi_term]
             roi_annotations.project=cj.parameters.cytomine_id_project
             roi_annotations.image=image.id
+            roi_annotations.includeAlgo = True
             roi_annotations.showWKT = True
             if cj.parameters.cytomine_id_user:
               roi_annotations.user=cj.parameters.cytomine_id_user
