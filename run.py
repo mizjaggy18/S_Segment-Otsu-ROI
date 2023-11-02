@@ -56,15 +56,30 @@ def main(argv):
 
             bit_depth = image.bitDepth if image.bitDepth is not None else 8
 
-            roi_annotations = AnnotationCollection()
-            roi_annotations.terms=[cj.parameters.cytomine_id_roi_term]
-            roi_annotations.project=cj.parameters.cytomine_id_project
-            roi_annotations.image=image.id
-            roi_annotations.includeAlgo = True
-            roi_annotations.showWKT = True
+            # roi_annotations = AnnotationCollection()
+            # roi_annotations.terms=[cj.parameters.cytomine_id_roi_term]
+            # roi_annotations.project=cj.parameters.cytomine_id_project
+            # roi_annotations.image=image.id
+            # roi_annotations.includeAlgo = True
+            # roi_annotations.showWKT = True
+            # if cj.parameters.cytomine_id_user:
+            #   roi_annotations.user=cj.parameters.cytomine_id_user
+            # roi_annotations.fetch()
+            # print(roi_annotations)
+
+            annotation_params = {
+                "term": [cj.parameters.cytomine_id_roi_term],
+                "project": cj.parameters.cytomine_id_project,
+                "image": image.id,
+                "showWKT": True
+            }                
+            # roi_annotations.fetch()
+
+            roi_user_annotations = AnnotationCollection(**annotation_params).fetch()
             if cj.parameters.cytomine_id_user:
-              roi_annotations.user=cj.parameters.cytomine_id_user
-            roi_annotations.fetch()
+              roi_user_annotations=AnnotationCollection(**annotation_params,user=cj.parameters.cytomine_id_user).fetch()
+            roi_algo_annotations = AnnotationCollection(**annotation_params, includeAlgo=True).fetch()
+            roi_annotations = roi_user_annotations + roi_algo_annotations
             print(roi_annotations)
 
             for roi in roi_annotations:
