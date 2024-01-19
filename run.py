@@ -113,63 +113,63 @@ def main(argv):
               img[img_alpha==0]=255
               #################################
 
-            pixels = np.array(img).flatten()
-            th_value = threshold_otsu(pixels)
-            print("Otsu threshold: ", th_value)
-            threshold = th_value + cj.parameters.threshold_allowance
-            print("Otsu threshold + allowance: ", threshold)
-            thresh_mask = (img < threshold).astype(np.uint8)*255
-          
-            kernel_size = np.array(cj.parameters.kernel_size)
-            if kernel_size.size != 2:  # noqa: PLR2004
-              kernel_size = kernel_size.repeat(2)
-            kernel_size = tuple(np.round(kernel_size).astype(int))
-          
-            # Create structuring element for morphological operations
-            kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, kernel_size)
-            min_region_size = np.sum(kernel)
-            _, output, stats, _ = cv2.connectedComponentsWithStats(thresh_mask, connectivity=8)
-            sizes = stats[1:, -1]
-            for i, size in enumerate(sizes):
-                if size < min_region_size:
-                    thresh_mask[output == i + 1] = 0
-
-            thresh_mask = cv2.morphologyEx(thresh_mask, cv2.MORPH_DILATE, kernel)
-            thresh_mask = cv2.bitwise_not(thresh_mask)
- 
-            extension = 10
-            extended_img = cv2.copyMakeBorder(
-                thresh_mask,
-                extension,
-                extension,
-                extension,
-                extension,
-                cv2.BORDER_CONSTANT,
-                value=2 ** bit_depth
-            )
-
-            # extract foreground polygons 
-            fg_objects = mask_to_objects_2d(extended_img, background=255, offset=(-extension, -extension))
-            zoom_factor = resize_ratio
-
-            # Only keep components greater than {image_area_perc_threshold}% of whole image
-            min_area = int((cj.parameters.image_area_perc_threshold / 100) * image.width * image.height)
-            transform_matrix = [zoom_factor, 0, 0, -zoom_factor, min_x, max_y]
-            annotations = AnnotationCollection()
-            for i, (fg_poly, _) in enumerate(fg_objects):
-                upscaled = affine_transform(fg_poly, transform_matrix)
-                if upscaled.area <= min_area:
-                    continue
-                # print(upscaled.area)
-                try:
-                    print("Mask area: ", upscaled.area)
-                    Annotation(
-                    location=upscaled.wkt,
-                    id_image=image.id,
-                    id_terms=[cj.parameters.cytomine_id_predicted_term],
-                    id_project=cj.parameters.cytomine_id_project).save()                    
-                except:
-                    print("An exception occurred. Proceed with next annotations")
+              pixels = np.array(img).flatten()
+              th_value = threshold_otsu(pixels)
+              print("Otsu threshold: ", th_value)
+              threshold = th_value + cj.parameters.threshold_allowance
+              print("Otsu threshold + allowance: ", threshold)
+              thresh_mask = (img < threshold).astype(np.uint8)*255
+            
+              kernel_size = np.array(cj.parameters.kernel_size)
+              if kernel_size.size != 2:  # noqa: PLR2004
+                kernel_size = kernel_size.repeat(2)
+              kernel_size = tuple(np.round(kernel_size).astype(int))
+            
+              # Create structuring element for morphological operations
+              kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, kernel_size)
+              min_region_size = np.sum(kernel)
+              _, output, stats, _ = cv2.connectedComponentsWithStats(thresh_mask, connectivity=8)
+              sizes = stats[1:, -1]
+              for i, size in enumerate(sizes):
+                  if size < min_region_size:
+                      thresh_mask[output == i + 1] = 0
+  
+              thresh_mask = cv2.morphologyEx(thresh_mask, cv2.MORPH_DILATE, kernel)
+              thresh_mask = cv2.bitwise_not(thresh_mask)
+   
+              extension = 10
+              extended_img = cv2.copyMakeBorder(
+                  thresh_mask,
+                  extension,
+                  extension,
+                  extension,
+                  extension,
+                  cv2.BORDER_CONSTANT,
+                  value=2 ** bit_depth
+              )
+  
+              # extract foreground polygons 
+              fg_objects = mask_to_objects_2d(extended_img, background=255, offset=(-extension, -extension))
+              zoom_factor = resize_ratio
+  
+              # Only keep components greater than {image_area_perc_threshold}% of whole image
+              min_area = int((cj.parameters.image_area_perc_threshold / 100) * image.width * image.height)
+              transform_matrix = [zoom_factor, 0, 0, -zoom_factor, min_x, max_y]
+              annotations = AnnotationCollection()
+              for i, (fg_poly, _) in enumerate(fg_objects):
+                  upscaled = affine_transform(fg_poly, transform_matrix)
+                  if upscaled.area <= min_area:
+                      continue
+                  # print(upscaled.area)
+                  try:
+                      print("Mask area: ", upscaled.area)
+                      Annotation(
+                      location=upscaled.wkt,
+                      id_image=image.id,
+                      id_terms=[cj.parameters.cytomine_id_predicted_term],
+                      id_project=cj.parameters.cytomine_id_project).save()                    
+                  except:
+                      print("An exception occurred. Proceed with next annotations")
 
         cj.job.update(statusComment="Finished.")
 
